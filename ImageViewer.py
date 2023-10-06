@@ -10,6 +10,14 @@ import math
 import os
 from PixInfo import PixInfo
 
+# import tkinter
+# from tkinter import *
+# from tkinter import filedialog
+# import math
+# import os
+# from PIL import Image, ImageTk
+# from PixInfo import PixInfo
+
 
 # Main app.
 class ImageViewer(Frame):
