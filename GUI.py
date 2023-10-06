@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+import tkinter.font as font
 import math
 import os
 from PIL import Image, ImageTk
@@ -23,7 +24,7 @@ class GUI(Frame):
         #
         # Create the left frame that will take up 2/3 of the GUI
         # The purpose of this is to house all of the images
-        self.leftFrame = Frame(guiFrame, bg='#F4F7E8', width=525, height=300)
+        self.leftFrame = Frame(guiFrame, bg='#F4F7E8', width=550, height=300)
         self.leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand = True)
         
         # Create a canvas inside the left frame
@@ -54,7 +55,7 @@ class GUI(Frame):
         #
         # Create the right frame that will take up 1/3 of the GUI
         # The purpose of this is to house the selected image
-        self.rightFrame = Frame(guiFrame, bg='#EAE5DC', width=275, height=300)
+        self.rightFrame = Frame(guiFrame, bg='#EAE5DC', width=250, height=300)
         self.rightFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand = True)
         self.rightFrame.pack_propagate(0)
         
@@ -72,20 +73,26 @@ class GUI(Frame):
     #---------------------------------------------------------------------------------------    
         #Buttons
         # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
-
-        intensity_button = Button(self.rightFrame, text = "Intensity", fg = "black", padx = 5, width = 5, height = 2)
-        #intensity_button.grid(row = 0)
-        intensity_button.pack(side = TOP, fill = X)
+        intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2)
+        intensity_button.pack(side=TOP, fill=X)
+        intensity_button.bind("<Enter>", self.make_bold)
+        intensity_button.bind("<Leave>", self.make_normal)       
+        # intensity_button = Button(self.rightFrame, text = "Intensity Method", fg = "black", padx = 5, width = 5, height = 2)
+        # #intensity_button.grid(row = 0)
+        # intensity_button.pack(side = TOP, fill = X)
 
         #button works, still need to figure out how to open selected image
         openImage_button = Button(self.rightFrame, text="Open Image", fg="black", padx=5, width=5, height=2, command=lambda: self.open_image(self.pix_info.get_imageList()[self.current_image_index].filename))
-
         #openImage_button.grid(row = 1)
         openImage_button.pack(side = TOP, fill = X)
+        openImage_button.bind("<Enter>", self.make_bold)
+        openImage_button.bind("<Leave>", self.make_normal)
 
-        colorCode_button = Button(self.rightFrame, text = "Color-Code", fg = "black", padx = 5, width = 5,height = 2)
+        colorCode_button = Button(self.rightFrame, text = "Color-Code Method", fg = "black", padx = 5, width = 5,height = 2)
         #colorCode_button.grid(row = 2)
         colorCode_button.pack(side = TOP, fill = X)
+        colorCode_button.bind("<Enter>", self.make_bold)
+        colorCode_button.bind("<Leave>", self.make_normal)       
 
     #---------------------------------------------------------------------------------------
         #                                           BOTTOM FRAME
@@ -118,18 +125,29 @@ class GUI(Frame):
         self.pack()
         
     def populate_images(self):
-        row, col = 0, 0
-        for i, photo in enumerate(self.pix_info.get_photoList()):
-            img_label = Label(self.innerFrame, image=photo)
-            img_label.image_index = i
-            img_label.grid(row=row, column=col)
+         row, col = 0, 0
+         for i, photo in enumerate(self.pix_info.get_photoList()):
+        # Resize the image to a fixed size (e.g., 100x100 pixels)
+            img = Image.open(self.pix_info.get_imageList()[i].filename)
+            img = img.resize((100, 100), Image.LANCZOS)
+            img = ImageTk.PhotoImage(img)
+
+            # Create a label for the image and place it in the grid
+            img_label = Label(self.innerFrame, image=img)
+            img_label.image = img  # Keep a reference to avoid garbage collection
+            img_label.image_index = i  # Save the index to the label
+            img_label.grid(row=row * 2, column=col)  # Multiply row by 2 to leave space for filenames
             img_label.filename = self.pix_info.get_imageList()[i].filename  # Save the filename to the label
             img_label.bind('<Button-1>', self.on_image_click)  # Bind click event
 
+            # Create a label for the filename and place it under the image
+            filename_label = Label(self.innerFrame, text=os.path.basename(img_label.filename), wraplength=100)
+            filename_label.grid(row=row * 2 + 1, column=col)
+
             col += 1
-            if col > 4:  
+            if col > 4:
                 col = 0
-                row += 1  
+                row += 1
    #---------------------------------------------------------------------------------------
    #this is the method when we click the image, it displays on the right side
     def on_image_click(self, event):
@@ -165,7 +183,13 @@ class GUI(Frame):
     def open_image(self, filename):
         os.startfile(filename)
     #---------------------------------------------------------------------------------------
- 
+    def make_bold(self, event):
+        event.widget.config(font=("Helvetica", "10", "bold"))
+
+    def make_normal(self, event):
+        event.widget.config(font=("Helvetica", "10"))
+    #---------------------------------------------------------------------------------------
+
 # main function    
 if __name__ == '__main__':
     root = tk.Tk()
