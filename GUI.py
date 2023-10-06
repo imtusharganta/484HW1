@@ -90,14 +90,14 @@ class GUI(Frame):
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
         self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
+        #Create a horizontal scrollbar
         self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand = True)  
         
         
         
 
-        #Create a horizontal scrollbar
-        bottom_scroll = Scrollbar(self.bottomFrame, orient=HORIZONTAL)
-        bottom_scroll.pack(side=BOTTOM, fill = X)
+
+        
         #bottom_Scroll.config(command=text.xview) -- "text" being the area with the results
         
 
