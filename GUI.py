@@ -12,6 +12,7 @@ class GUI(Frame):
         Frame.__init__(self, master)
         self.master = master
         self.pix_info = pix_info
+        self.current_image_index = 0 
         
         #main frame of the GUI
         guiFrame = Frame(master)
@@ -77,7 +78,8 @@ class GUI(Frame):
         intensity_button.pack(side = TOP, fill = X)
 
         #button works, still need to figure out how to open selected image
-        openImage_button = Button(self.rightFrame, text = "Open Image", fg = "black", padx = 5, width = 5, height = 2, command=lambda : self.open_image(pix_info.get_imageList()[0].filename))
+        openImage_button = Button(self.rightFrame, text="Open Image", fg="black", padx=5, width=5, height=2, command=lambda: self.open_image(self.pix_info.get_imageList()[self.current_image_index].filename))
+
         #openImage_button.grid(row = 1)
         openImage_button.pack(side = TOP, fill = X)
 
@@ -89,17 +91,28 @@ class GUI(Frame):
         #                                           BOTTOM FRAME
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
-        self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
         #Create a horizontal scrollbar
-        self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand = True)  
-        
-        
-        
+    
+        # Create a frame at the bottom for results
+        # The purpose of this is to house the results of the image comparison
+        self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
+        self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.X)  # Changed to fill=tk.X
 
+        # Create a canvas inside the bottom frame
+        self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', height=100)  # Set height
+        self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)  # Changed to fill=X
 
-        
-        #bottom_Scroll.config(command=text.xview) -- "text" being the area with the results
-        
+        # Create a horizontal scrollbar and associate it with the canvas
+        self.bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
+        self.bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
+        self.bottomCanvas.config(xscrollcommand=self.bottomScrollbar.set)
+
+        # Create a frame inside the canvas to hold other widgets
+        self.bottomInnerFrame = Frame(self.bottomCanvas, bg='#E8F5EF')
+        self.bottomCanvas.create_window((0, 0), window=self.bottomInnerFrame, anchor='nw')
+
+        # Update the scroll region to fit the inner frame
+        self.bottomInnerFrame.bind('<Configure>', lambda e: self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox('all')))  
 
     #---------------------------------------------------------------------------------------
         self.pack()
@@ -108,6 +121,7 @@ class GUI(Frame):
         row, col = 0, 0
         for i, photo in enumerate(self.pix_info.get_photoList()):
             img_label = Label(self.innerFrame, image=photo)
+            img_label.image_index = i
             img_label.grid(row=row, column=col)
             img_label.filename = self.pix_info.get_imageList()[i].filename  # Save the filename to the label
             img_label.bind('<Button-1>', self.on_image_click)  # Bind click event
@@ -120,7 +134,8 @@ class GUI(Frame):
    #this is the method when we click the image, it displays on the right side
     def on_image_click(self, event):
         clicked_label = event.widget
-        image_filename = clicked_label.filename  # Assuming you've stored the filename in the label
+        self.current_image_index = event.widget.image_index 
+        image_filename = clicked_label.filename
 
         # Retrieve the actual PIL Image object using the filename
         selected_image = Image.open(image_filename)
