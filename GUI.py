@@ -33,9 +33,9 @@ class GUI(Frame):
 
         # Create a scrollbar and associate it with the canvas
         self.scrollbar = Scrollbar(self.leftFrame, orient=VERTICAL, command=self.canvas.yview)
-        self.scrollbar.pack(side=LEFT, fill=Y)
+        self.scrollbar.pack(side=RIGHT, fill=Y)
         self.canvas.config(yscrollcommand=self.scrollbar.set)
-        
+
         # Bind the mouse wheel event to the canvas
         self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
 
@@ -68,6 +68,23 @@ class GUI(Frame):
         self.selected_image_label.config(image=default_image_tk)
         self.selected_image_label.image = default_image_tk 
        
+    #---------------------------------------------------------------------------------------    
+        #Buttons
+        # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
+
+        intensity_button = Button(self.rightFrame, text = "Intensity", fg = "black", padx = 5, width = 5, height = 2)
+        #intensity_button.grid(row = 0)
+        intensity_button.pack(side = TOP, fill = X)
+
+        #button works, still need to figure out how to open selected image
+        openImage_button = Button(self.rightFrame, text = "Open Image", fg = "black", padx = 5, width = 5, height = 2, command=lambda : self.open_image(pix_info.get_imageList()[0].filename))
+        #openImage_button.grid(row = 1)
+        openImage_button.pack(side = TOP, fill = X)
+
+        colorCode_button = Button(self.rightFrame, text = "Color-Code", fg = "black", padx = 5, width = 5,height = 2)
+        #colorCode_button.grid(row = 2)
+        colorCode_button.pack(side = TOP, fill = X)
+
     #---------------------------------------------------------------------------------------
         #                                           BOTTOM FRAME
         # Create a frame at the bottom for results
@@ -75,9 +92,14 @@ class GUI(Frame):
         self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
         self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand = True)  
         
-    #---------------------------------------------------------------------------------------    
-    #Buttons
-    # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
+        
+        
+
+        #Create a horizontal scrollbar
+        bottom_scroll = Scrollbar(self.bottomFrame, orient=HORIZONTAL)
+        bottom_scroll.pack(side=BOTTOM, fill = X)
+        #bottom_Scroll.config(command=text.xview) -- "text" being the area with the results
+        
 
     #---------------------------------------------------------------------------------------
         self.pack()
