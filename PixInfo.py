@@ -65,7 +65,7 @@ class PixInfo:
             R, G, B = pixel[:3]
             
             # Calculate intensity
-            intensity = 0.299 * R + 0.587 * G + 0.114 * B
+            intensity = (0.299 * R) +( 0.587 * G) + (0.114 * B)
             
             # Append the intensity value to the list
             self.intensity_values.append(intensity)
@@ -87,8 +87,8 @@ class PixInfo:
         # # pixel.
         # return CcBins, InBins
              # 2D array initialization for bins, initialized to zero.
-        CcBins = [0]*64
-        InBins = [0]*25
+        CcBins = [0]*65
+        InBins = [0]*26
 
         # Calculate intensity values for the image
         intensity_values = self.intensity_calculator(self.pixList)
@@ -97,7 +97,7 @@ class PixInfo:
         InBins[0] = len(intensity_values)  # h0 includes the total number of pixels
         for intensity in intensity_values:
             bin_index = int(intensity // 10) + 1  # Calculate which bin the intensity falls into
-            if bin_index < 25:  # Ensure the index is within the range of InBins
+            if bin_index < 26:  # Ensure the index is within the range of InBins
                 InBins[bin_index] += 1  # Increment the count for that bin
 
         return CcBins, InBins

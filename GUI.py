@@ -73,7 +73,7 @@ class GUI(Frame):
     #---------------------------------------------------------------------------------------    
         #Buttons
         # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
-        intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2, command=self.calculate_and_display_intensity)
+        intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2, command=self.display_intensity)
         intensity_button.pack(side=TOP, fill=X)
         intensity_button.bind("<Enter>", self.make_bold)
         intensity_button.bind("<Leave>", self.make_normal)       
@@ -98,33 +98,23 @@ class GUI(Frame):
         #                                           BOTTOM FRAME
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
-    
+
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
-        self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
-        self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.X)  # Changed to fill=tk.X
-
-
-        self.bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL)
-        self.bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
-        #self.canvas.config(xscrollcommand=self.scrollbar)
-        
+        self.bottomFrame = Frame(self, bg='#E8F5EF', height=100)
+        self.bottomFrame.pack(side=BOTTOM, fill=X)
 
         # Create a canvas inside the bottom frame
-        self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', height=100)  # Set height
-        self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)  # Changed to fill=X
+        self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', width = 800, height=100)  # Set height
 
         # Create a horizontal scrollbar and associate it with the canvas
-        
+
+        bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
+        bottomScrollbar.pack(side=BOTTOM, fill = X)
+        self.bottomCanvas.configure(xscrollcommand=bottomScrollbar.set)
         self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox("all"))
 
-        
-        ## Create a frame inside the canvas to hold other widgets
-        #self.bottomInnerFrame = Frame(self.bottomCanvas, bg='#E8F5EF')
-        #self.bottomCanvas.create_window((0, 0), window=self.bottomInnerFrame, anchor='nw')
-
-        ## Update the scroll region to fit the inner frame
-        #self.bottomInnerFrame.bind('<Configure>', lambda e: self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox('all')))  
+        self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)
 
         self.pack()
     #---------------------------------------------------------------------------------------
@@ -194,7 +184,7 @@ class GUI(Frame):
     def make_normal(self, event):
         event.widget.config(font=("Helvetica", "10"))
     #---------------------------------------------------------------------------------------
-    def calculate_and_display_intensity(self):
+    def display_intensity(self):
         # Get the selected image from PixInfo object
         selected_image = self.pix_info.get_imageList()[self.current_image_index]
         
