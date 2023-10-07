@@ -104,16 +104,20 @@ class GUI(Frame):
         self.bottomFrame = Frame(self, bg='#E8F5EF', width=800, height=100)
         self.bottomFrame.pack(side=tk.BOTTOM, fill=tk.X)  # Changed to fill=tk.X
 
+
+        self.bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL)
+        self.bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
+        #self.canvas.config(xscrollcommand=self.scrollbar)
+        
+
         # Create a canvas inside the bottom frame
         self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', height=100)  # Set height
         self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)  # Changed to fill=X
 
         # Create a horizontal scrollbar and associate it with the canvas
-        bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
-        bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
-        #bottomScrollbar.config(xscrollcommand=self.bottomScrollbar)
+        
+        self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox("all"))
 
-    
         
         ## Create a frame inside the canvas to hold other widgets
         #self.bottomInnerFrame = Frame(self.bottomCanvas, bg='#E8F5EF')
