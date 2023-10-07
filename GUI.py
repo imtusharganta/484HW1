@@ -73,7 +73,7 @@ class GUI(Frame):
     #---------------------------------------------------------------------------------------    
         #Buttons
         # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
-        intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2)
+        intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2, command=self.calculate_and_display_intensity)
         intensity_button.pack(side=TOP, fill=X)
         intensity_button.bind("<Enter>", self.make_bold)
         intensity_button.bind("<Leave>", self.make_normal)       
@@ -98,7 +98,6 @@ class GUI(Frame):
         #                                           BOTTOM FRAME
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
-        #Create a horizontal scrollbar
     
         # Create a frame at the bottom for results
         # The purpose of this is to house the results of the image comparison
@@ -110,26 +109,28 @@ class GUI(Frame):
         self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)  # Changed to fill=X
 
         # Create a horizontal scrollbar and associate it with the canvas
-        self.bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
-        self.bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
-        self.bottomCanvas.config(xscrollcommand=self.bottomScrollbar.set)
+        bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
+        bottomScrollbar.pack(side=BOTTOM, fill=X)  # Changed to fill=X
+        #bottomScrollbar.config(xscrollcommand=self.bottomScrollbar)
 
-        # Create a frame inside the canvas to hold other widgets
-        self.bottomInnerFrame = Frame(self.bottomCanvas, bg='#E8F5EF')
-        self.bottomCanvas.create_window((0, 0), window=self.bottomInnerFrame, anchor='nw')
+    
+        
+        ## Create a frame inside the canvas to hold other widgets
+        #self.bottomInnerFrame = Frame(self.bottomCanvas, bg='#E8F5EF')
+        #self.bottomCanvas.create_window((0, 0), window=self.bottomInnerFrame, anchor='nw')
 
-        # Update the scroll region to fit the inner frame
-        self.bottomInnerFrame.bind('<Configure>', lambda e: self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox('all')))  
+        ## Update the scroll region to fit the inner frame
+        #self.bottomInnerFrame.bind('<Configure>', lambda e: self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox('all')))  
 
-    #---------------------------------------------------------------------------------------
         self.pack()
+    #---------------------------------------------------------------------------------------
         
     def populate_images(self):
          row, col = 0, 0
          for i, photo in enumerate(self.pix_info.get_photoList()):
         # Resize the image to a fixed size (e.g., 100x100 pixels)
             img = Image.open(self.pix_info.get_imageList()[i].filename)
-            img = img.resize((100, 100), Image.LANCZOS)
+            img = img.resize((75, 75), Image.LANCZOS)
             img = ImageTk.PhotoImage(img)
 
             # Create a label for the image and place it in the grid
@@ -145,7 +146,7 @@ class GUI(Frame):
             filename_label.grid(row=row * 2 + 1, column=col)
 
             col += 1
-            if col > 4:
+            if col > 5:
                 col = 0
                 row += 1
    #---------------------------------------------------------------------------------------
@@ -189,7 +190,20 @@ class GUI(Frame):
     def make_normal(self, event):
         event.widget.config(font=("Helvetica", "10"))
     #---------------------------------------------------------------------------------------
-
+    def calculate_and_display_intensity(self):
+        # Get the selected image from PixInfo object
+        selected_image = self.pix_info.get_imageList()[self.current_image_index]
+        
+        # Call the intensity_calculator method from PixInfo
+        intensity_values = self.pix_info.intensity_calculator(list(selected_image.getdata()))
+        
+        # Clear existing text from the canvas
+        self.bottomCanvas.delete("all")
+        
+        # Display the intensity values in the bottomCanvas
+        intensity_str = str(intensity_values)
+        self.bottomCanvas.create_text(10, 50, anchor=tk.W, text=intensity_str, tags="intensity_text")
+    #--------------------------------------------------------------------------------------
 # main function    
 if __name__ == '__main__':
     root = tk.Tk()
