@@ -69,8 +69,31 @@ class GUI(Frame):
         default_image_tk = ImageTk.PhotoImage(default_image_resized)
         self.selected_image_label.config(image=default_image_tk)
         self.selected_image_label.image = default_image_tk 
+
+    #---------------------------------------------------------------------------------------
+        #                                           BOTTOM FRAME
+        # Create a frame at the bottom for results
+        # The purpose of this is to house the results of the image comparison
+
+        # Create a frame at the bottom for results
+        # The purpose of this is to house the results of the image comparison
+        self.bottomFrame = Frame(self, bg='#E8F5EF', height=100)
+        self.bottomFrame.pack(side=BOTTOM, fill=X)
+
+        # Create a canvas inside the bottom frame
+        self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', width = 800, height=100)  # Set height
+
+        # Create a horizontal scrollbar and associate it with the canvas
+
+        bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
+        bottomScrollbar.pack(side=BOTTOM, fill = X)
+        self.bottomCanvas.configure(xscrollcommand=bottomScrollbar.set)
+        
+        self.bottomCanvas.bind('<Configure>', lambda e: self.canvas.config(scrollregion=self.bottomCanvas.bbox('all')))
+        self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)
+        
        
-    #---------------------------------------------------------------------------------------    
+    #--------------------------------------------------------------------------------------- 
         #Buttons
         # This will be used for creating buttons such as INTENSITY, OPEN IMAGE, COLOR CODE#
         intensity_button = Button(self.rightFrame, text="Intensity Method", fg="black", padx=5, width=5, height=2, command=self.display_intensity)
@@ -92,33 +115,9 @@ class GUI(Frame):
         #colorCode_button.grid(row = 2)
         colorCode_button.pack(side = TOP, fill = X)
         colorCode_button.bind("<Enter>", self.make_bold)
-        colorCode_button.bind("<Leave>", self.make_normal)       
-
-    #---------------------------------------------------------------------------------------
-        #                                           BOTTOM FRAME
-        # Create a frame at the bottom for results
-        # The purpose of this is to house the results of the image comparison
-
-        # Create a frame at the bottom for results
-        # The purpose of this is to house the results of the image comparison
-        self.bottomFrame = Frame(self, bg='#E8F5EF', height=100)
-        self.bottomFrame.pack(side=BOTTOM, fill=X)
-
-        # Create a canvas inside the bottom frame
-        self.bottomCanvas = Canvas(self.bottomFrame, bg='#E8F5EF', width = 800, height=100)  # Set height
-
-        # Create a horizontal scrollbar and associate it with the canvas
-
-        bottomScrollbar = Scrollbar(self.bottomFrame, orient=HORIZONTAL, command=self.bottomCanvas.xview)
-        bottomScrollbar.pack(side=BOTTOM, fill = X)
-        self.bottomCanvas.configure(xscrollcommand=bottomScrollbar.set)
-        self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox("all"))
-
-        self.bottomCanvas.pack(side=LEFT, fill=X, expand=True)
-
-        self.pack()
-    #---------------------------------------------------------------------------------------
-        
+        colorCode_button.bind("<Leave>", self.make_normal) 
+        self.pack()      
+    #---------------------------------------------------------------------------------------       
     def populate_images(self):
          row, col = 0, 0
          for i, photo in enumerate(self.pix_info.get_photoList()):
@@ -197,6 +196,8 @@ class GUI(Frame):
         # Display the intensity values in the bottomCanvas
         intensity_str = str(intensity_values)
         self.bottomCanvas.create_text(10, 50, anchor=tk.W, text=intensity_str, tags="intensity_text")
+        
+        self.bottomCanvas.config(scrollregion=self.bottomCanvas.bbox("all"))
     #--------------------------------------------------------------------------------------
 # main function    
 if __name__ == '__main__':
